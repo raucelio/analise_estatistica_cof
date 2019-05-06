@@ -1,0 +1,59 @@
+
+# Situação
+
+------
+
+Analisar o peso e a altura de 2 grupos de crianças. Um de meninos e outro de meninas. Para cada criança foi anotado o peso (kg), a altura (m), a indicação do sexo (F - feminino, M - masculino) e calculado o seu Indice de Massa Corpórea (IMC), cuja fórmula é
+
+$$
+imc =\dfrac{peso}{altura^2}
+$$
+onde a altura é em **quilos** e a altura em **centimetros**.
+
+------
+
+```{r dados}
+
+peso   <- c(46,40,36,60,36,37,40,36,45,65)
+altura <- c(164,158,162,166,154,154,156,158,149,152)
+sexo   <- c('F','F','F','F','F','M','M','M','M','M')
+
+imc <- peso/(altura/100)^2
+
+```
+
+# Análise
+
+------
+
+Calcule o IMC médio global, IMC correspondente de cada grupo e elabore  um grafico de barras onde a primeira coluna representa o IMC dos meninos, a segunda o IMC das meninas com uma linha horizontal que indica o IMC global.
+
+------
+
+```{r}
+
+imc_global <- mean(imc)
+imc_menino <- mean(imc[sexo=="M"])
+imc_menina <- mean(imc[sexo=="F"])
+
+```
+
+
+# Resutados
+
+Independente de ser menino ou menina, o IMC global ? `r round(imc_global,2)` $kg/cm^2$. Para os meninos foi observado um IMC de `r imc_menino` $kg/cm^2$ e para as meninas  de `r imc_menina` $kg/cm^2$. Importa, imformar que a diferença do IMC entre os grupos é de `r abs(imc_menino-imc_menina)` $kg/cm^2$.  O gráfico tambám auxilia a representar essa realidade.
+
+```{r grafico, fig.cap="Imc médio dos grupos analisados"}
+barplot(c(imc_menino,imc_menina), 
+        names.arg = c("menino","menina"),
+        ylim      = c(0,20), 
+        border    = F,
+        col       = c("skyblue4", "tomato1")
+        )
+
+abline(h=imc_global,
+       col = "red",
+       lwd=2)
+```
+
+

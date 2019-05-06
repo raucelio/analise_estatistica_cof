@@ -1,0 +1,60 @@
+---
+output: html_document
+---
+# Histograma
+
+```
+Diagrama constituído por retângulos ou linhas desenhados a partir de uma linha de base, em que a posição deles ao longo dessa linha representa o valor ou a amplitude de uma das variáveis, e a sua altura, o valor correspondente de uma segunda variável.
+
+```
+
+
+
+```{r configuracao, echo=FALSE}
+# Definindo a área de trabalho
+
+setwd("~/../Desktop/cof/Unidade 1")
+
+# Obtendo os dados
+
+load("Feijao.RData")
+
+```
+
+Um histograma elaborado a partir da massas, em gramas, de 140 grãos de feijão é apresentado abaixo. Os dados estão no data frame **feijao** que armazena a variável **peso**. Esse data frame está no arquivo Feijao.RData.
+
+```{r grafico, echo=FALSE}
+
+# limites das classes
+
+aux <- seq(0.10,0.33,length.out=12)
+
+# histograma básico
+
+hist(feijao$peso,    
+     breaks=aux,      
+     axes=F, 
+     xlab="", 
+     ylab="Frequência",
+     main="Ditribuição da massa de 140 grãos de feijão.",
+     col="orangered")
+
+#eixo X 
+
+axis(1,
+     at=aux,
+     labels=round(aux,2),
+     cex.axis=0.6) 
+
+# eixo Y
+
+axis(2,
+     at=seq(0,30,5),
+     cex.axis=0.6)
+```
+
+
+### Definições:
+
+1.  [histograma](https://www.google.com/search?q=histograma&rlz=1C1GCEU_pt-BRBR819BR819&oq=histograma&aqs=chrome..69i57j0l5.4527j1j7&sourceid=chrome&ie=UTF-8)
+

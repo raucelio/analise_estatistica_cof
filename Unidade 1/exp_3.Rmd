@@ -1,0 +1,29 @@
+---
+output: html_document
+params:
+    uf: "RJ"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+load("drogas.RData")
+
+estado <- dados[dados$UF==params$uf,]
+estado[is.na(estado)] <- 0
+
+unidade <- paste("SR/PF/",params$uf,sep="")
+```
+
+# Circunscrição: `r unidade`
+
+Total das apreensões é de `r sum(estado$qtd_maconha, na.rm=T)` kg.
+O total de  apreensões por unidade estão na tabela abaixo.
+```{r , echo=F}
+library(knitr)
+kable(estado[,c(2,3)],
+      row.names = F, digits = 3,
+      col.names = c("Unidade","Quantidade"),
+      caption = "Apreensões de Maconha.")
+```
+
