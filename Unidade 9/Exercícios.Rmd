@@ -1,0 +1,93 @@
+---
+title: "Exercícios - ggplot2"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+```
+
+O objetivo é recriar os gráficos mostrado abaixo.
+Não se preocupe se os grafícos não exatamente igual aos apresentados abaixo.
+O que importa é que todos tenha uma compreensão geral do ggplot2
+
+1. *Histograma*
+
+Para o primeiro gráfico, vamos usar do dataset mpg, que está no pacote do ggplot2
+
+```{r histograma, message=FALSE, warning=FALSE}
+library(ggplot2)
+library(ggthemes)
+head(mpg)
+```
+
+Vamos agora criar um histograma (**geom_histogram**) da variável *hwy* - horse power
+dicas: definir o number do barras (bins = ) igual a 20
+
+```{r echo=FALSE, fig.height=6, fig.width = 10, message=FALSE, warning=FALSE}
+
+ggplot(mpg,aes(x=hwy)) + 
+  geom_histogram(bins=20, fill = 'red', alpha=0.5)
+```
+  
+2. *Gráfico de Barra*
+
+
+Agora vamos faxer um gráfico de barras (**geom_bar**) para mostra o número de marcas (**manufacturer**), sendo o preenchimento das barras será divido pelo o número de cilindros dos carros (**cyl**)
+
+```{r barplot, echo=FALSE, fig.height=6, fig.width=10, message=FALSE, warning=FALSE, paged.print=TRUE}
+
+ggplot(mpg,aes(x = manufacturer)) + 
+  geom_bar(aes(fill=factor(cyl))) + 
+  theme_excel() + scale_color_excel()
+```
+
+3. *Gráfico de Barra*
+
+Para esse exercício, vamos utilizar o datasets **txhousing**, que contém informações sobre o Mercado Imobiliário no Texas - EUA
+
+```{r txhousing}
+head(txhousing)
+```
+
+Agora vamos criar um gráfico de pontos -**scatterplot em inglês** das variáveis *sales* e *volume*.
+Depois vamos brincar com os argumentos *color* e *alpha* no comando **geom_point** para melhor a visualização das informações.
+
+```{r scatterplot, echo=FALSE, fig.height=6, fig.width=10, message=FALSE, warning=FALSE}
+
+pl <- ggplot(txhousing,aes(x=sales,y=volume)) 
+pl <- pl + geom_point(color='blue',alpha=0.5)
+pl <- pl + theme_bw()
+print(pl)
+```
+
+Agora vamos adicionar uma linha de tendência ao nosso gráfico de pontos.
+*Dica: Procurem pelo comando* **geom_smooth()** *na ajuda do RStudio*
+
+```{r geom_smooth, echo=FALSE, fig.height=6, fig.width=10, message=FALSE, warning=FALSE}
+
+pl <- ggplot(txhousing,aes(x=sales,y=volume)) 
+pl <- pl + geom_point(color='blue',alpha=0.5)
+pl <- pl + scale_y_continuous(labels=function(x) format(x, big.mark = ".", scientific = FALSE))
+pl <- pl + geom_smooth(color='red')
+pl <- pl + theme_bw()
+print(pl)
+```
+
+3. *Gráfico de linha*
+
+Utilizando o mesmo dataset do exemplo anterior, vamos plotar o número de vendas (**sales**) segundo o ano das vendas (**year**). Para isso será necessario fazer somar o total das vendas por ano.
+
+```{r total, echo=FALSE, fig.height=6, fig.width=10, message=FALSE, warning=FALSE}
+
+ano <- aggregate(data = txhousing, sales ~ year,
+                 FUN = sum, na.action = na.omit)
+pl <- ggplot(ano,aes(y=sales,x=year)) 
+pl <- pl + geom_line(color='navy', size = 1)
+pl <- pl + geom_point(color='navy', size = 2)
+pl <- pl + scale_x_continuous(breaks = seq(2000,2015, by = 1))
+pl <- pl + scale_y_continuous(breaks = seq(0,350000, by = 50000), limits = c(0,350000))
+pl <- pl + theme_bw()
+print(pl)
+
+```
+

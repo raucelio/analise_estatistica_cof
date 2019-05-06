@@ -1,0 +1,359 @@
+---
+output:
+    slidy_presentation: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+
+#Guia de consultas para o comando SELECT
+
+
+> A linguagem SQL foi criada com o objetivo de padronizar os comandos 
+> de manipulação de dados em SGBD's. Hoje em dia, apesar de a linguagem 
+> possuir uma quantidade considerável de extensões e implementações 
+> proprietárias, pode-se afirmar que a meta foi alcançada. Conhecendo 
+> bem a linguagem é possível acessar os recursos básicos de qualquer 
+> banco relacional, como Oracle, SQL Server ou MySQL, sem praticamente 
+> nenhuma mudança.
+
+
+#SELECT simples
+
+O comando **SELECT** permite recuperar os dados de um objeto do banco de dados, como uma tabela, view. A sintaxe mais básica do comando é:
+
+```
+SELECT <lista_de_campos> 
+FROM <nome_da_tabela></nome_da_tabela></lista_de_campos>
+```
+
+Exemplo:
+
+```
+exp1 <- "select * 
+         from maconha"
+
+sqldf(exp1)
+```
+
+```
+exp2 <-  "select UNIDADE 
+         from cocaina"
+
+sqldf(exp2)
+
+```
+
++ O caractere `*` representa todos os campos. 
+
+# COMANDO WHERE
+
+A cláusula **WHERE** permite ao comando SQL passar condições de filtragem. Vejam os exemplos 
+```
+exp3 <-  "select UNIDADE 
+         from cocaina
+         where UF = 'SP' "
+
+sqldf(exp3)
+```
+
+```
+exp4 <-  "select UNIDADE, TOTAL  
+         from cocaina
+         where UF = 'SP' AND TOTAL >= 1000 "
+
+sqldf(exp4)
+```
+
+```
+exp5 <-  "select UF, UNIDADE  
+         from cocaina
+         where UF = 'MG' OR UF = 'GO' "
+
+sqldf(exp5)
+```
+
+
+# EXEMPLOS DA CLAÚSULA WHERE
+
+Os parênteses corretamente utilizados dão mais poder as consultas, conforme exemplo abaixo:
+
+```
+exp6 <-  "select UF, UNIDADE  
+         from cocaina
+         where (UF = 'MG' OR UF = 'GO') AND TOTAL > 300 "
+
+sqldf(exp6)
+```
+
+Neste comando são selecionadas as unidade de MG ou GO com apreensão superior a 300 kg.
+
+
+#FILTRO DE TEXTO
+
+Para busca parcial de string, o **SELECT** fornece o operador **LIKE**. Veja o exemplo:
+
+```
+sqldf("select UF, UNIDADE  
+         from cocaina
+         where UNIDADE like '%SR%'")
+```
+
+```
+sqldf("select UF, UNIDADE  
+         from cocaina
+         where UNIDADE like 'DPF%'")
+```
+```
+sqldf("select UF, UNIDADE  
+         from cocaina
+         where UNIDADE like '%DF'")
+```
+
++ O uso de máscara no início e no fim da string fornece maior poder de busca, mas causa considerável perda de performance.
+
+
+# FUNÇÃO UPPER E LOWER
+
+O SQL diferencia caixa baixa de caixa alta. Para eliminar essa diferença, utilizem as funções UPPER ou LOWER. Veja abaixo:
+
+```
+sqldf("select UF, UNIDADE  
+         from cocaina
+         where lower(UNIDADE) like '%df'")
+```
+
+# ORDENAÇÃO
+
+A ordenação pode ser definida com o comando **ORDER BY**. 
+
+```
+sqldf("select UF, UNIDADE, TOTAL  
+         from cocaina
+         order by UF")
+```
+Os comandos acima ordenam a saida em ordem crescente de UF.
+
+```
+sqldf("select UF, UNIDADE, TOTAL  
+         from cocaina
+         order by UF, TOTAL DESC ") 
+````
+Os comandos acima ordenam a saida em ordem crescente de UF e as suas unidades são ordenadas em ordem decrescente do total aprrendido.
+
++ A utilização da palavra **DESC** garante a ordenação invertida:
+
+
+# JUNÇÃO DE TABELAS  
+
+O SELECT permite juntar duas ou mais tabelas no mesmo resultado.
+
+
+As tabelas  **maconha** e **cocaina** são unificadas através do campo chave,  **unidade**,  por uma operação de igualdade.
+
+```
+sqldf("select cocaina.UF   , cocaina.UNIDADE, cocaina.TOTAL, maconha.TOTAL
+         from cocaina, maconha
+         where cocaina.unidade = maconha.unidade")
+```
++ Os nomes dos campos são prefixados pelo nome das tabelas, resolvendo duplicidades. 
+
+O uso de aliases no código SQL torna a manutenção mais simples, claúsula **AS**.
+
+```
+sqldf("select A.UF   , A.UNIDADE, A.TOTAL, B.TOTAL
+         from cocaina as A, maconha as B
+         where A.unidade = B.unidade")
+```   
+
+
++ As unidade que não apreenderam maconha e cocaína não são selecionados.
+
+# COMANDO JOIN
+
+A junção de tabelas no comando SELECT também pode ser feita com o comando JOIN. Este comando deve ser utilizado com a palavra reservada INNER ou com a palavra OUTER:
+
++ INNER: Semelhante ao uso do operador "=" na junção de tabelas. Aqui os registros sem correspondências não são incluídos. Esta cláusula é opcional e pode ser omitida no comando JOIN.
+
++ OUTER: Os registros que não se relacionam também são exibidos. Neste caso, é possível definir qual tabela será incluída na seleção, mesmo não tendo correspondência.
+
+# COMANDO JOIN
+
+Para exemplificar, temos as tabelas abaixo:
+```
+sqldf("select A.UF   , A.UNIDADE, A.TOTAL, B.TOTAL
+      from cocaina as A
+      inner join maconha as B
+      on  (A.unidade = B.unidade)")
+```
+
+Este comando pode ser escrito na versão resumida abaixo:
+````
+sqldf("select A.UF   , A.UNIDADE, A.TOTAL, B.TOTAL
+      from cocaina as A
+      join maconha as B
+      on  (A.unidade = B.unidade)")
+````
++ Os produtos que não possuem componentes não são incluídos na seleção.
+
+# COMANDO JOIN
+
+
+```
+sqldf("select A.UF   , A.UNIDADE, A.TOTAL as 'Total Cocaina', B.TOTAL as 'Total Maconha'
+      from cocaina as A
+      inner join maconha as B
+      on  (A.unidade = B.unidade)")
+```
+
+```
+sqldf("select A.UF   , A.UNIDADE,A.TOTAL as 'Total Cocaina', B.TOTAL as 'Total Maconha'
+      from cocaina as A
+      join maconha as B
+      on  (A.unidade = B.unidade)")
+```
+      
++ Todos os produtos serão incluídos na seleção, independente de possuírem um componente. 
++ A palavra LEFT se refere à primeira tabela do relacionamento. 
+
+# COMANDO JOIN
+
+
+Mais alguns exemplos:
+
+```
+sqldf("select A.UF   , A.UNIDADE, A.TOTAL as 'Total Cocaina', B.TOTAL as 'Total Maconha'
+      from cocaina as A
+      left outer join maconha as B
+      on  (A.unidade = B.unidade)")
+```
+
+```
+sqldf("select A.UF   , A.UNIDADE, A.TOTAL as 'Total Maconha', B.TOTAL as 'Total Cocaina'
+      from maconha A
+      left outer join cocaina as B
+      on  (A.unidade = B.unidade)
+      where A.UF = 'SP'")
+```
+
+```
+sqldf("select A.UF   , A.UNIDADE, A.TOTAL as 'Total Maconha', B.TOTAL as 'Total Cocaina'
+      from maconha A
+      left outer join cocaina as B
+      on  (A.unidade = B.unidade)
+      where A.UF = 'SP'
+      order by A.TOTAL DESC")
+``` 
+#FULL OUTER JOIN  
+
+Podemos ainda combinar o uso de INNER e OUTER através do comando FULL OUTER JOIN. Neste caso, todos os registros das duas tabelas envolvidas serão exibidos, tendo ou não relacionamento. Observe:
+
+#UNION
+
+Existe ainda uma segunda forma de juntar tabelas com o comando SELECT. Através do parâmetro UNION, é possível colar o conteúdo de duas tabelas. Sejam as tabelas:
+
+```
+x <- data.frame (ano=c(2001,2002,2003),
+                 sonho=c("casa","carro","aumento"))
+y <- data.frame (ano=c(2001,2002,2003),
+                 sonho=c("casa","gato","aprovação"))
+```
+
+O resultado dos comandos é a listagem de todos os anos e senhos dentro do mesmo resultadot. Repare que no comando JOIN á união é horizontal e no UNION a união é vertical.
+
+
+```
+sqldf("select * from x
+      union
+      select * from y")
+```
+
+
+# UNION
+
+Por default, os registros duplicados são eliminados na cláusula UNION. No exemplo anterior, se tivéssemos um cliente com o mesmo nome e código de um funcionário, apenas o registro da primeira tabela seria exibido. Para incluir todos os registros, independente de duplicidade, utilize a palavra ALL:
+
+```
+sqldf("select * from x
+      union all
+      select * from y")
+```                 
+
+# FUNÇÕES DE AGRUPAMENTO  
+
+São cinco as funções básicas de agrupamento:
+
++ AVG: Retorna a média do campo especificado  
+
+```
+sqldf("select avg(TOTAL) from maconha")  
+```
++ MIN: Retorna o menor valor de um grupo de registros:  
+
+```
+sqldf("select min(TOTAL) from maconha")  
+```
++ MAX: Retorna o maior valor de um grupo de registros:  
+
+```
+sqldf("select max(TOTAL) from maconha")  
+
+```
+# FUNÇÕES DE AGRUPAMENTO  
+
++ SUM: Retorna o somatório de um grupo de registros:  
+
+```
+sqldf("select sum(TOTAL) from maconha")  
+```
++ COUNT: Retorna a quantidade de itens da seleção  
+
+```
+sqldf("select count(UNIDADE) from maconha")  
+```
+
+# AGRUPAMENTO
+
+Um poderoso recurso do comando SELECT é o parâmetro **GROUPY BY**. Ele retorna informações agrupadas de um conjunto de registros. Por exemplo, o total de maconha apreendida por uf é dado pelo código.
+
+```
+ sqldf("select UF, sum(TOTAL)
+    from maconha
+    group by UF")
+```
+
+Abaixo o número de apreensões por uf.
+
+```
+ sqldf("select UF, count(*)
+    from maconha
+    group by UF")
+```
+
+# HAVING
+
+Através do comando HAVING podemos filtrar a cláusula GROUP BY.
+```
+sqldf("select UF, sum(TOTAL),  count(*)
+    from maconha
+      group by UF
+      having count(*) > 2")
+```
+
++ Somente as uf com  mais de 10 apreensões serão selecionados. 
+
+Para filtros normais, pode-se utilizar o comando WHERE. 
+
+```
+sqldf("select UF, sum(TOTAL), count(*)
+    from maconha
+      where TOTAL > 100
+      group by UF
+      having count(*) > 2")
+```
+
+Agora são consideradas apenas as apreensões superiores a 100 kg.
+

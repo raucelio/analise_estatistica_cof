@@ -1,0 +1,67 @@
+---
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Análise da Duração dos Inquéritos Relatados.
+
+O data frame INDICAMENTO tem os registro dos inquéritos relatado no ano de 2018 até 30/01/2018. A caractéristica observadas foram:
+
++ Data de instauração
++ Unidade responsável
++ Unidade da Federação
++ Área de competência responsável
++ Número de indiciamentos
++ Número de Indiciados
++ Data de relato
++ Duração em dias 
+
+O DICOR solicitou as seguintes informações:
+
+1. O número de inquéritos analisados.   
+2. A duração média dos inquéritos.   
+3. A duração média dos inquéritos por competência.    
+
+```{r, echo=FALSE}
+library(knitr)
+
+## use a função load() para ler o arquivo INDICIAMENTO.RData e 
+## ter acesso ao data frame INDICIAMENTO
+
+load("INDICIAMENTO.RData")
+
+## n é número de registros
+
+n <- nrow(INDICIAMENTO)
+
+## Cria as sequintes variaveis que farão parte do texto do relatório
+
+## med é a média da duração dos de inquéritos
+med <- mean(INDICIAMENTO$duracao)
+## med_comp é uma data frame com as médias por competencia 
+
+med_comp <- aggregate(INDICIAMENTO["duracao"], INDICIAMENTO["competencia"], mean)
+
+med_n <- aggregate(INDICIAMENTO["duracao"], INDICIAMENTO["competencia"], length)
+
+
+med_comp <- med_comp[order(med_comp$duracao),]
+
+med_n <- med_n[order(med_n$duracao),]
+
+dados <- merge(med_comp, med_n,
+               by.x="competencia",
+               by.y="competencia")
+names(dados) <- c("Competência","Media","QTD")
+
+dados <- dados[order(dados$QTD),]
+
+barplot(med_comp$duracao,names.arg = med_comp$competencia, las=2,cex.names = 0.7)
+abline(h=med)
+
+```
+
+`r kable(dados)`

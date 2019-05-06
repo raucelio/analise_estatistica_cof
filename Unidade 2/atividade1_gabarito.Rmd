@@ -1,0 +1,121 @@
+---
+title: "Atividade 1"
+output: html_notebook
+---
+
+## 
+
+O arquivo **Auto.csv**  tem as informações abaixo sobre 329 veículos:
+
++ **mpg** : Milhas por galão.	
++ **cylinders** : Número de cilindros entre 4 e 8.
++ **displacement** : Deslocamento volumétrico do motor (polegadas cúbicas). 
++ **horsepower** : Potência do motor.
++ **weight** : Peso do veículo (libras). 
++ **acceleration** : Tempo, em segundos, para acelerar de 0 a 60 mph.
++ **year** : Ano do modelo.
++ **origin** : Origem do veículo:1. Americano, 2. Europeu, 3. Japonês. 
++ **name** : Nome do veículo.
+
+As informações em **Auto.csv** são separadas por vírgulas e a primeira linha armazena o nome das variáveis. Use a função **read.csv()**
+
+
+#### (1) Qual a distribuição de frequências absoluta da variável **origin**  do data frame auto?
+
+```{r}
+
+# Leitura dos dados
+# origin: 1 - americano, 2 - europeu e 3 - japonês
+
+auto  <- read.csv("Auto.csv")
+
+table (auto$origin)
+
+```
+***
+
+#### (2) Qual a distribuição de frequências relativa da variável **origin**  do data frame auto?
+1. armazene a distribuição de frequência no objeto **aux**.
+2. Utilize a função **sum** para obter o número de carros analizados e armazene esse valor an variável **total**.
+3. Armazene em **aux1** a razão entre os valores de **aux** e **total**.
+4. Apresente na tela o valor de **aux1**.  
+
+```{r}
+aux<-table(auto$origin)
+total <- sum(aux)
+aux1 <- aux/total
+aux1
+```
+***
+
+
+
+
+#### (3) Elabore um gráfico de barras a partir da tabela de frequencia da origem dos carros?
+
+1. armazene a distribuição de frequência no objeto **aux**.
+2. utilize o objeto **aux** para informar a função **barplot** a altura das barras. 
+
+```{r}
+
+aux <- table(auto$origin)
+
+barplot(aux)
+
+
+```
+
+***
+
+
+#### (4) Elabore um gráfico de barras a partir da tabela de frequência do ano dos carros?
+
+1. armazene a distribuição de frequência davariável **year** no objeto **aux**.
+2. utilize o objeto **aux** para informar a função **barplot** a altura das barras.
+3. armazene em **aux1** as frequências relativas da variável **year**.
+
+```{r}
+
+aux <- table(auto$year)
+
+barplot(aux)
+
+
+```
+#### (5) Elabore um gráfico de barras a partir das frequências acumuladas da variável ano?
+
+1. armazene a distribuição de frequência da variável **year** no objeto **aux**.
+2. armazene em **aux1** as frequencias acmuladas da variável **year**. Dica: cumSum()
+3. utilize o objeto **aux1** para informar a função **barplot** a altura das barras.
+4. armazene em **aux2** as frequências relativas cumuladas da variável **year**.
+
+```{r}
+
+aux <- table(auto$year)
+
+aux1<- cumsum  (aux)
+
+barplot(aux1)
+
+aux1
+
+
+```
+#### (6) Elabore um histograma a partir da variável weight?
+
+1. utilize a função **hist**.
+2. número de classes é 20.
+3. amplitude da classe 180
+4. limite inferior da primeira classe é 1600.
+5.  limite superior da última classe é 5200.
+
+```{r}
+
+limites <- seq (1600, 5200, by =  180)
+
+aux <-hist(auto$weight, breaks = limites, col="gray", ann= F, axes = F, labels = T, ylim=c(0,60)  )
+
+axis(1, at = limites, las = 2)
+
+```
+
